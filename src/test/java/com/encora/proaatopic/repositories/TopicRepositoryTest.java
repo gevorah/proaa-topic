@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @TestPropertySource("/application.properties")
-
 class TopicRepositoryTest {
 
     @Autowired
