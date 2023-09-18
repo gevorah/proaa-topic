@@ -1,4 +1,4 @@
-package com.encora.PROAAtopic;
+package com.encora.proaatopic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

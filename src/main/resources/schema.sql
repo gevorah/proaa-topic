@@ -1,0 +1,18 @@
+DROP TABLE IF EXISTS TOPICS;
+DROP TABLE IF EXISTS RESOURCES;
+
+CREATE TABLE TOPICS (
+  topic_id INT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  user_id INT NOT NULL,
+  PRIMARY KEY (topic_id)
+);
+
+CREATE TABLE RESOURCES (
+  resource_id INT NOT NULL,
+  description_name VARCHAR(50) NOT NULL,
+  url VARCHAR(600) NOT NULL,
+  topic_id INT NOT NULL,
+  PRIMARY KEY (resource_id),
+  FOREIGN KEY (topic_id) REFERENCES TOPICS(topic_id)
+ );

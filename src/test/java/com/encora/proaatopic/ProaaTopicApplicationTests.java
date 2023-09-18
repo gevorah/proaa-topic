@@ -1,4 +1,4 @@
-package com.encora.PROAAtopic;
+package com.encora.proaatopic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package com.encora.PROAAtopic;
+package com.encora.proaatopic;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
