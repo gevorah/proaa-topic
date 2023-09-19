@@ -25,12 +25,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TopicServiceTest {
     @Mock
     private TopicRepository topicRepository;
 
     @InjectMocks
     private TopicService topicService = new TopicServiceImpl();
+
+    public List<Topic> topics = new ArrayList<>();
+
+    @BeforeAll
+    void beforeAll() {
+        topics.add(new Topic("Unit testing 1", "1"));
+        topics.add(new Topic("Unit testing 2", "1"));
+        topics.add(new Topic("Unit testing 3", "1"));
+    }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -39,10 +49,10 @@ class TopicServiceTest {
         Pageable pageable = PageRequest.of(0,10);
 
         @BeforeAll
-        void beforeAll(){
-            topTen.add(new TopicDto(1, "Unit testing 1", new Long(3)));
-            topTen.add(new TopicDto(2, "Unit testing 2",  new Long(1)));
-            topTen.add(new TopicDto(3, "Unit testing 3",  new Long(0)));
+        void beforeAll() {
+            topTen.add(new TopicDto(1, "Unit testing 1", 3L));
+            topTen.add(new TopicDto(2, "Unit testing 2", 1L));
+            topTen.add(new TopicDto(3, "Unit testing 3",  0L));
         }
 
         @Test
@@ -71,17 +81,32 @@ class TopicServiceTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class Topics {
-        public List<Topic> topics = new ArrayList<>();
-
-        @BeforeAll
-        void beforeAll() {
-            topics.add(new Topic("Unit testing 1", "1"));
-            topics.add(new Topic("Unit testing 2", "2"));
-            topics.add(new Topic("Unit testing 3", "3"));
+    class TopicsByOwner {
+        @Test
+        void when_called_with_valid_userId_should_return_list() throws Exception {
+            String userId = "1";
+            when(topicRepository.findTopicsByUserId(userId)).thenReturn(topics);
+            List<Topic> topics = topicService.topicsByOwner(userId);
+            assertEquals(3, topics.size());
+            verify(topicRepository).findTopicsByUserId(userId);
         }
 
+        @Test
+        void when_called_with_invalid_userId_should_return_empty() throws Exception {
+            String userId = "0";
+            when(topicRepository.findTopicsByUserId(userId)).thenReturn(Collections.emptyList());
+            List<Topic> topics = topicService.topicsByOwner(userId);
+            assertTrue(topics.isEmpty());
+            verify(topicRepository).findTopicsByUserId(userId);
+        }
+
+        @Test
+        void when_called_with_null_userId_should_return_empty() throws Exception {
+            when(topicRepository.findTopicsByUserId(null)).thenReturn(Collections.emptyList());
+            List<Topic> topics = topicService.topicsByOwner(null);
+            assertTrue(topics.isEmpty());
+            verify(topicRepository).findTopicsByUserId(null);
+        }
     }
 
 }

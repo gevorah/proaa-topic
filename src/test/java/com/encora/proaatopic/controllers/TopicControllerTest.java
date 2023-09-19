@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(TopicController.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TopicControllerTest {
     @MockBean
     private TopicService topicService;
@@ -28,19 +29,28 @@ class TopicControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    public List<Topic> topics = new ArrayList<>();
+
+    @BeforeAll
+    void beforeAll() {
+        topics.add(new Topic("Unit testing 1", "1"));
+        topics.add(new Topic("Unit testing 2", "1"));
+        topics.add(new Topic("Unit testing 3", "1"));
+    }
+
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class TopTen {
         public List<TopicDto> topTen = new ArrayList<>();
 
         @BeforeAll
-        void beforeAll(){
-            topTen.add(new TopicDto(1, "Unit testing 1", new Long(3)));
-            topTen.add(new TopicDto(2, "Unit testing 2",  new Long(1)));
-            topTen.add(new TopicDto(3, "Unit testing 3",  new Long(0)));
+        void beforeAll() {
+            topTen.add(new TopicDto(1, "Unit testing 1", 3L));
+            topTen.add(new TopicDto(2, "Unit testing 2", 1L));
+            topTen.add(new TopicDto(3, "Unit testing 3",  0L));
         }
         @Test
-        void topTen_when_called_should_return_topic_list() throws Exception {
+        void when_called_should_return_topic_list() throws Exception {
             when(topicService.topTen()).thenReturn(topTen);
 
             mockMvc.perform(get("/topics/top-ten"))
@@ -52,7 +62,7 @@ class TopicControllerTest {
         }
 
         @Test
-        void topTen_when_no_topics_should_return_empty() throws Exception {
+        void when_no_topics_should_return_empty() throws Exception {
             when(topicService.topTen()).thenReturn(Collections.emptyList());
 
             mockMvc.perform(get("/topics/top-ten"))
@@ -61,7 +71,7 @@ class TopicControllerTest {
         }
 
         @Test
-        void topTen_when_called_should_return_sorted_list() throws Exception {
+        void when_called_should_return_sorted_list() throws Exception {
             when(topicService.topTen()).thenReturn(topTen);
 
             mockMvc.perform(get("/topics/top-ten"))
@@ -73,19 +83,36 @@ class TopicControllerTest {
         }
     }
 
-
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class Topics {
-        public List<Topic> topics = new ArrayList<>();
+    class TopicsByOwner {
+        @Test
+        void when_called_with_valid_userId_should_return_list() throws Exception {
+            String userId = "1";
+            when(topicService.topicsByOwner(userId)).thenReturn(topics);
 
-        @BeforeAll
-        void beforeAll() {
-            topics.add(new Topic("Unit testing 1", "1"));
-            topics.add(new Topic("Unit testing 2", "2"));
-            topics.add(new Topic("Unit testing 3", "3"));
+            mockMvc.perform(get("/topics").param("userId", userId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(3)))
+                    .andExpect(jsonPath("$[0].name", is("Unit testing 1")))
+                    .andExpect(jsonPath("$[1].name", is("Unit testing 2")))
+                    .andExpect(jsonPath("$[2].name", is("Unit testing 3")));
         }
 
+        @Test
+        void when_called_with_invalid_userId_should_return_empty() throws Exception {
+            String userId = "0";
+            when(topicService.topicsByOwner(userId)).thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/topics").param("userId", userId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(0)));
+        }
+
+        @Test
+        void when_called_without_userId_should_throw_error() throws Exception {
+            mockMvc.perform(get("/topics"))
+                    .andExpect(status().is4xxClientError());
+        }
     }
 
 }
