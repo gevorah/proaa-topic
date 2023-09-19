@@ -9,5 +9,4 @@ class ProaaTopicApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

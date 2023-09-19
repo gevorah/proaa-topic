@@ -1,16 +1,12 @@
 package com.encora.proaatopic.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class TopicDto {
-    private Integer id;
-    private String name;
-    private Integer resources;
+    Integer id;
+    String name;
+    Long resources;
 }
