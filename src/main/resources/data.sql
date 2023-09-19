@@ -7,13 +7,13 @@ VALUES
     (4, 'Software development methodologies', '1'),
     (5, 'Application frameworks', '1'),
     (6, 'UML Design', '1'),
-    (7, 'Formats to interchange data', '1'),
-    (8, 'Database', '1'),
-    (9, 'ORM', '1'),
-    (10, 'Web Services and communications', '1'),
-    (11, 'Version Control', '1'),
-    (12, 'Unit Testing', '1'),
-    (13, 'Concurrency', '1');
+    (7, 'Formats to interchange data', '2'),
+    (8, 'Database', '2'),
+    (9, 'ORM', '2'),
+    (10, 'Web Services and communications', '2'),
+    (11, 'Version Control', '3'),
+    (12, 'Unit Testing', '3'),
+    (13, 'Concurrency', '3');
 
 INSERT INTO RESOURCES
     (resource_id, description_name, url, topic_id)

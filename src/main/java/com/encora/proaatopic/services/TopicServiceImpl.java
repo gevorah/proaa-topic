@@ -1,5 +1,6 @@
 package com.encora.proaatopic.services;
 
+import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,4 +21,7 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findTopicsOrderedByResources(pageable);
     }
 
+    public List<Topic> topicsByOwner(String userId) {
+        return topicRepository.findTopicsByUserId(userId);
+    }
 }
