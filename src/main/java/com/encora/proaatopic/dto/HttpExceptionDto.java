@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TopicDto {
-    Integer id;
-    String name;
-    Long resources;
+public class HttpExceptionDto {
+    private Integer status;
+    private String message;
 }

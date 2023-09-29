@@ -2,37 +2,50 @@ package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.TopicDto;
+import com.encora.proaatopic.services.AuthService;
 import com.encora.proaatopic.services.TopicService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(TopicController.class)
+@AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TopicControllerTest {
+    @MockBean
+    private AuthService authService;
+
     @MockBean
     private TopicService topicService;
 
     @Autowired
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     public List<Topic> topics = new ArrayList<>();
 
     @BeforeAll
     void beforeAll() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
         topics.add(new Topic("Unit testing 1", "1"));
         topics.add(new Topic("Unit testing 2", "1"));
         topics.add(new Topic("Unit testing 3", "1"));
@@ -83,14 +96,26 @@ class TopicControllerTest {
         }
     }
 
+    @BeforeEach
+    void beforeEach() {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn("1");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Nested
     class TopicsByOwner {
+
         @Test
         void when_called_with_valid_userId_should_return_list() throws Exception {
             String userId = "1";
+
             when(topicService.topicsByOwner(userId)).thenReturn(topics);
 
-            mockMvc.perform(get("/topics").param("userId", userId))
+            mockMvc.perform(get("/topics"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(3)))
                     .andExpect(jsonPath("$[0].name", is("Unit testing 1")))
@@ -101,17 +126,12 @@ class TopicControllerTest {
         @Test
         void when_called_with_invalid_userId_should_return_empty() throws Exception {
             String userId = "0";
+
             when(topicService.topicsByOwner(userId)).thenReturn(Collections.emptyList());
 
-            mockMvc.perform(get("/topics").param("userId", userId))
+            mockMvc.perform(get("/topics"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
-        }
-
-        @Test
-        void when_called_without_userId_should_throw_error() throws Exception {
-            mockMvc.perform(get("/topics"))
-                    .andExpect(status().is4xxClientError());
         }
     }
 

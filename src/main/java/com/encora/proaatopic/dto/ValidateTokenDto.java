@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TopicDto {
-    Integer id;
-    String name;
-    Long resources;
+public class ValidateTokenDto {
+    private String _id;
+    private Long iat;
+    private Long exp;
 }
