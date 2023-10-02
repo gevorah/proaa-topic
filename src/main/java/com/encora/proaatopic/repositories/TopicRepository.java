@@ -1,7 +1,7 @@
 package com.encora.proaatopic.repositories;
 
 import com.encora.proaatopic.domain.Topic;
-import com.encora.proaatopic.dto.TopicDto;
+import com.encora.proaatopic.dto.TopicTopDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +18,7 @@ public interface TopicRepository extends JpaRepository<Topic, Integer> {
             "GROUP BY t.id, t.name, t.userId\n" +
             "ORDER BY COUNT(r.id) DESC"
     )
-    List<TopicDto> findTopicsOrderedByResources(Pageable pageable);
+    List<TopicTopDto> findTopicsOrderedByResources(Pageable pageable);
 
     @Query(value = "SELECT t FROM Topic t WHERE t.userId = :userId")
     List<Topic> findTopicsByUserId(@Param("userId") String userId);

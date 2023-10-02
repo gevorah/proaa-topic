@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TopicDto {
+public class TopicTopDto {
     Integer id;
     String name;
     Long resources;

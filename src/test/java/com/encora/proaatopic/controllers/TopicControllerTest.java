@@ -1,7 +1,7 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Topic;
-import com.encora.proaatopic.dto.TopicDto;
+import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.services.AuthService;
 import com.encora.proaatopic.services.TopicService;
 import org.junit.jupiter.api.*;
@@ -41,11 +41,12 @@ class TopicControllerTest {
 
     private MockMvc mockMvc;
 
-    public List<Topic> topics = new ArrayList<>();
+    public List<Topic> topics;
 
     @BeforeAll
     void beforeAll() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        topics = new ArrayList<>();
         topics.add(new Topic("Unit testing 1", "1"));
         topics.add(new Topic("Unit testing 2", "1"));
         topics.add(new Topic("Unit testing 3", "1"));
@@ -54,13 +55,13 @@ class TopicControllerTest {
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class TopTen {
-        public List<TopicDto> topTen = new ArrayList<>();
+        public List<TopicTopDto> topTen = new ArrayList<>();
 
         @BeforeAll
         void beforeAll() {
-            topTen.add(new TopicDto(1, "Unit testing 1", 3L));
-            topTen.add(new TopicDto(2, "Unit testing 2", 1L));
-            topTen.add(new TopicDto(3, "Unit testing 3",  0L));
+            topTen.add(new TopicTopDto(1, "Unit testing 1", 3L));
+            topTen.add(new TopicTopDto(2, "Unit testing 2", 1L));
+            topTen.add(new TopicTopDto(3, "Unit testing 3",  0L));
         }
         @Test
         void when_called_should_return_topic_list() throws Exception {

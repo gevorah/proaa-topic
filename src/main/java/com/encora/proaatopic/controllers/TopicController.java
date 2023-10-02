@@ -1,8 +1,7 @@
 package com.encora.proaatopic.controllers;
 
-import com.encora.proaatopic.configs.JwtAuthentication;
 import com.encora.proaatopic.domain.Topic;
-import com.encora.proaatopic.dto.TopicDto;
+import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.TopicService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @CrossOrigin({"http://127.0.0.1:5173", "http://localhost:5173"})
@@ -27,10 +25,10 @@ public class TopicController {
     private TopicService topicService;
 
     @GetMapping(path = "/top-ten")
-    public ResponseEntity<List<TopicDto>> topTen() {
+    public ResponseEntity<List<TopicTopDto>> topTen() {
         log.debug("Running top ten topics endpoint");
         try {
-            List<TopicDto> topics = topicService.topTen();
+            List<TopicTopDto> topics = topicService.topTen();
             log.info("Top " + topics.size() + " topics");
             return ResponseEntity
                     .status(HttpStatus.OK)
