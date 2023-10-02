@@ -1,6 +1,5 @@
 package com.encora.proaatopic.domain;
 
-import com.encora.proaatopic.dto.TopicDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,31 +12,11 @@ import java.util.ArrayList;
 
 
 @Entity
-@Table(name = "TOPICS")
+@Table(name = "Topics")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@NamedNativeQuery(name = "top_ten",
-        query = "SELECT t.topic_id as id, t.name as name, COUNT(r.topic_id) as resources\n" +
-        "FROM TOPICS t\n" +
-        "LEFT JOIN RESOURCES r ON t.topic_id = r.topic_id\n" +
-        "GROUP BY t.topic_id, t.name, t.user_id\n" +
-        "ORDER BY resources DESC\n" +
-        "LIMIT 10;",
-        resultSetMapping = "topic_dto"
-)
-@SqlResultSetMapping(
-        name = "topic_dto",
-        classes = @ConstructorResult(
-                targetClass = TopicDto.class,
-                columns = {
-                        @ColumnResult(name = "id", type = Integer.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "resources", type = Integer.class)
-                }
-        )
-)
 public class Topic {
     @Id
     @GeneratedValue
@@ -48,13 +27,13 @@ public class Topic {
     private String name;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private String userId;
 
     @OneToMany(mappedBy = "topic", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Resource> resources;
 
-    public Topic(String name, Integer userId) {
+    public Topic(String name, String userId) {
         this.name = name;
         this.userId = userId;
         this.resources = new ArrayList<>();
