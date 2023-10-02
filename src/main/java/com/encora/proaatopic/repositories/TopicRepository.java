@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, Integer> {
-    @Query(value = "SELECT new com.encora.proaatopic.dto.TopicDto(t.id, t.name, COUNT(r.id))\n" +
+    @Query(value = "SELECT new com.encora.proaatopic.dto.TopicTopDto(t.id, t.name, COUNT(r.id))\n" +
             "FROM Topic t\n" +
             "LEFT JOIN Resource r ON t.id = r.topic.id\n" +
             "GROUP BY t.id, t.name, t.userId\n" +
