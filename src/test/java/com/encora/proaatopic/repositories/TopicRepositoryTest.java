@@ -74,7 +74,7 @@ class TopicRepositoryTest {
     }
 
     @Nested
-    class CreateTopic {
+    class SaveTopic {
         @Test
         void when_called_with_topic_should_return_topic() throws Exception {
             Topic topic = new Topic("Topic", "1");
