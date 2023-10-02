@@ -22,7 +22,14 @@ import java.util.ArrayList;
 public class Topic {
     @Id
     @GeneratedValue(generator = "topic_generator")
-    @GenericGenerator(name = "topic_generator", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator", parameters = {@Parameter(name = "sequence_name", value = "topic_sequence"), @Parameter(name = "initial_value", value = "14"), @Parameter(name = "increment_size", value = "1")})
+    @GenericGenerator(name = "topic_generator",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @Parameter(name = "sequence_name", value = "topic_sequence"),
+                    @Parameter(name = "initial_value", value = "14"),
+                    @Parameter(name = "increment_size", value = "1")
+            }
+    )
     @Column(name = "topic_id", unique = true, nullable = false)
     private Integer id;
 

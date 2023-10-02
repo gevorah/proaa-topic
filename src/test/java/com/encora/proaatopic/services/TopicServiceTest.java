@@ -1,6 +1,7 @@
 package com.encora.proaatopic.services;
 
 import com.encora.proaatopic.domain.Topic;
+import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,21 +9,27 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -111,4 +118,27 @@ class TopicServiceTest {
         }
     }
 
+    @Nested
+    class CreateTopic {
+        @Test
+        void when_called_with_topic_should_return_topic() throws Exception {
+            Topic topic = new Topic("Topic", "1");
+
+            when(topicRepository.save(ArgumentMatchers.any(Topic.class))).thenReturn(topic);
+
+            assertEquals(topic, topicService.addTopic(topic));
+            verify(topicRepository).save(topic);
+        }
+
+        @Test
+        void when_called_without_topic_should_throw_error() throws Exception {
+            when(topicRepository.save(null)).thenThrow(new InvalidDataAccessApiUsageException("Entity must not be null."));
+
+            Exception exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+                topicService.addTopic(null);
+            });
+            assertTrue(exception.getMessage().contains("Entity must not be null."));
+            verify(topicRepository).save(null);
+        }
+    }
 }

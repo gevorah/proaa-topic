@@ -4,8 +4,10 @@ import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.TopicTopDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
@@ -13,8 +15,9 @@ import org.springframework.test.context.TestPropertySource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @TestPropertySource("/application.properties")
@@ -70,5 +73,21 @@ class TopicRepositoryTest {
         }
     }
 
+    @Nested
+    class CreateTopic {
+        @Test
+        void when_called_with_topic_should_return_topic() throws Exception {
+            Topic topic = new Topic("Topic", "1");
 
+            assertEquals(topic, topicRepository.save(topic));
+        }
+
+        @Test
+        void when_called_without_topic_should_throw_error() throws Exception {
+            Exception exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+                topicRepository.save(null);
+            });
+            assertTrue(exception.getMessage().contains("Entity must not be null."));
+        }
+    }
 }

@@ -59,8 +59,7 @@ public class TopicController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userId = (String) authentication.getPrincipal();
-            Topic newTopic = new Topic(topicDto.getName(), userId);
-            Topic topic = topicService.addTopic(newTopic);
+            Topic topic = topicService.addTopic(new Topic(topicDto.getName(), userId));
             log.info(topic.getName() + " topic created by " + userId);
             return ResponseEntity.status(HttpStatus.OK).body(topic);
         } catch (Exception e) {
