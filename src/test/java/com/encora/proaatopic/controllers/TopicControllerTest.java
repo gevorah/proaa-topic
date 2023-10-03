@@ -26,8 +26,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -173,4 +172,32 @@ class TopicControllerTest {
         }
     }
 
+    @Nested
+    class UpdateTopic {
+        @Test
+        void when_called_with_topic_should_return_topic() throws Exception {
+            Topic topic = new Topic(1, "Topic", "1", null);
+
+            TopicDto topicDto = new TopicDto("Topic");
+            String json = objectMapper.writeValueAsString(topicDto);
+
+            when(topicService.editTopic(ArgumentMatchers.any(Topic.class))).thenReturn(topic);
+
+            mockMvc.perform(patch("/topics/" + topic.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(1)))
+                    .andExpect(jsonPath("$.name", is("Topic")))
+                    .andExpect(jsonPath("$.userId", is("1")));
+        }
+
+        @Test
+        void when_called_without_id_should_throw_error() throws Exception {
+            mockMvc.perform(patch("/topics/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().is4xxClientError());
+        }
+    }
 }

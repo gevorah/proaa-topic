@@ -12,4 +12,6 @@ public interface TopicService {
 
     Topic addTopic(Topic topic);
 
+    Topic editTopic(Topic topic);
+
 }
