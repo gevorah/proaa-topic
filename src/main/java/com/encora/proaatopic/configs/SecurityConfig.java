@@ -18,8 +18,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http
                 .csrf().disable()
-                .sessionManagement().
-                sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .cors()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/**/top-ten").permitAll()
