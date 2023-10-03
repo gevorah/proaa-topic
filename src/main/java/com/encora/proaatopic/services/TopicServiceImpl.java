@@ -24,4 +24,8 @@ public class TopicServiceImpl implements TopicService {
     public List<Topic> topicsByOwner(String userId) {
         return topicRepository.findTopicsByUserId(userId);
     }
+
+    public Topic addTopic(Topic topic) {
+        return topicRepository.save(topic);
+    }
 }

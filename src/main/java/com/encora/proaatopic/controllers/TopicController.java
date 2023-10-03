@@ -1,6 +1,7 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Topic;
+import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.TopicService;
@@ -30,9 +31,7 @@ public class TopicController {
         try {
             List<TopicTopDto> topics = topicService.topTen();
             log.info("Top " + topics.size() + " topics");
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(topics);
+            return ResponseEntity.status(HttpStatus.OK).body(topics);
         } catch (Exception e) {
             log.error("Unable to access top ten topics data with message: " + e.getMessage(), e);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
@@ -47,11 +46,24 @@ public class TopicController {
             String userId = (String) authentication.getPrincipal();
             List<Topic> topics = topicService.topicsByOwner(userId);
             log.info(topics.size() + " topics retrieved by " + userId);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(topics);
+            return ResponseEntity.status(HttpStatus.OK).body(topics);
         } catch (Exception e) {
             log.error("Unable to access topics data with message: " + e.getMessage(), e);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        }
+    }
+
+    @PostMapping()
+    public ResponseEntity<Topic> createTopic(@RequestBody TopicDto topicDto) {
+        log.debug("Running create topic endpoint");
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (String) authentication.getPrincipal();
+            Topic topic = topicService.addTopic(new Topic(topicDto.getName(), userId));
+            log.info(topic.getName() + " topic created by " + userId);
+            return ResponseEntity.status(HttpStatus.OK).body(topic);
+        } catch (Exception e) {
+            log.error("Unable to create topic with message: " + e.getMessage(), e);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }
     }
