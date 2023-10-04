@@ -3,6 +3,7 @@ package com.encora.proaatopic.services;
 import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
+import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -18,13 +19,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -139,6 +139,46 @@ class TopicServiceTest {
             });
             assertTrue(exception.getMessage().contains("Entity must not be null."));
             verify(topicRepository).save(null);
+        }
+    }
+
+    @Nested
+    class UpdateTopic {
+        @Test
+        void when_called_with_topic_should_return_topic() throws Exception {
+            Topic topic = new Topic(1, "Topic", "1", null);
+
+            when(topicRepository.findById(topic.getId())).thenReturn(Optional.of(topic));
+            when(topicRepository.save(ArgumentMatchers.any(Topic.class))).thenReturn(topic);
+
+            assertEquals(topic, topicService.editTopic(topic));
+            verify(topicRepository).save(topic);
+        }
+
+        @Test
+        void when_called_without_existing_topic_should_throw_error() throws Exception {
+            Topic topic = new Topic(0, "Topic", "1", null);
+
+            when(topicRepository.findById(topic.getId())).thenThrow(new NoSuchElementException());
+
+            Exception exception = assertThrows(NoSuchElementException.class, () -> {
+                topicService.editTopic(topic);
+            });
+            assertEquals(null, exception.getMessage());
+            verify(topicRepository).findById(topic.getId());
+        }
+
+        @Test
+        void when_called_with_topic_that_has_another_owner_should_throw_error() throws Exception {
+            Topic topic = new Topic(1, "Topic", "1", null);
+
+            when(topicRepository.findById(topic.getId())).thenReturn(Optional.of(new Topic(1, "Topic", "0", null)));
+
+            Exception exception = assertThrows(HttpException.class, () -> {
+                topicService.editTopic(topic);
+            });
+            assertTrue(exception.getMessage().contains("Unauthorized"));
+            verify(topicRepository).findById(topic.getId());
         }
     }
 }

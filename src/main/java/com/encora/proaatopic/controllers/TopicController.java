@@ -68,4 +68,19 @@ public class TopicController {
         }
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Topic> updateTopic(@PathVariable Integer id, @RequestBody TopicDto topicDto) {
+        log.debug("Running create topic endpoint");
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (String) authentication.getPrincipal();
+            Topic topic = topicService.editTopic(new Topic(id, topicDto.getName(), userId, null));
+            log.info(topic.getName() + " topic updated by " + userId);
+            return ResponseEntity.status(HttpStatus.OK).body(topic);
+        } catch (Exception e) {
+            log.error("Unable to create topic with message: " + e.getMessage(), e);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        }
+    }
+
 }
