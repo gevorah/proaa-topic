@@ -1,6 +1,9 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Resource;
+import com.encora.proaatopic.domain.Topic;
+import com.encora.proaatopic.dto.ResourceDto;
+import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.services.AuthService;
 import com.encora.proaatopic.services.ResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,10 +11,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,9 +62,9 @@ public class ResourceControllerTest {
         resources = new ArrayList<>();
         objectMapper = new ObjectMapper();
 
-        resources.add(new Resource(1, "Unit testing 1", "", null));
-        resources.add(new Resource(2, "Unit testing 2", "", null));
-        resources.add(new Resource(3, "Unit testing 3", "", null));
+        resources.add(new Resource("Unit testing 1", ""));
+        resources.add(new Resource("Unit testing 2", ""));
+        resources.add(new Resource("Unit testing 3", ""));
 
         Authentication authentication = mock(Authentication.class);
         when(authentication.getPrincipal()).thenReturn("1");
@@ -94,6 +100,36 @@ public class ResourceControllerTest {
             mockMvc.perform(get("/resources"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
+        }
+    }
+
+    @Nested
+    class CreateTopic {
+        @Test
+        void when_called_with_topic_should_return_topic() throws Exception {
+            Resource resource = new Resource("Resource", "Resource URL");
+
+            ResourceDto resourceDto = new ResourceDto("Resource", "Resource URL", 1);
+            String json = objectMapper.writeValueAsString(resourceDto);
+
+            when(resourceService.addResource(ArgumentMatchers.any(Resource.class), ArgumentMatchers.eq(resourceDto.getTopicId()))).thenReturn(resource);
+
+            mockMvc.perform(post("/resources")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.descriptionName", is(resource.getDescriptionName())))
+                    .andExpect(jsonPath("$.url", is(resource.getUrl())));
+        }
+
+        @Test
+        void when_called_without_topic_should_throw_error() throws Exception {
+            String json = objectMapper.writeValueAsString(null);
+
+            mockMvc.perform(post("/resources")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().is4xxClientError());
         }
     }
 }
