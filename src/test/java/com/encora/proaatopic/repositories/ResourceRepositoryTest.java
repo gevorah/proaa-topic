@@ -19,7 +19,7 @@ public class ResourceRepositoryTest {
     private ResourceRepository resourceRepository;
 
     @Nested
-    class FindTopicsByUserId {
+    class FindResourceByUserId {
         @Test
         void when_called_with_valid_userId_should_return_list() throws Exception {
             String userId = "1";

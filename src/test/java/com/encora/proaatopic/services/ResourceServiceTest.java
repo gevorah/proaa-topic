@@ -1,7 +1,6 @@
 package com.encora.proaatopic.services;
 
 import com.encora.proaatopic.domain.Resource;
-import com.encora.proaatopic.domain.Resource;
 import com.encora.proaatopic.repositories.ResourceRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
