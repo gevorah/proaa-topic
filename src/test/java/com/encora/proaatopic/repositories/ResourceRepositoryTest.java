@@ -1,7 +1,6 @@
 package com.encora.proaatopic.repositories;
 
 import com.encora.proaatopic.domain.Resource;
-import com.encora.proaatopic.domain.Topic;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

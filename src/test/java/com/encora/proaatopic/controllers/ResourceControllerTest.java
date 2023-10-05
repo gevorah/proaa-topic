@@ -1,9 +1,7 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Resource;
-import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.ResourceDto;
-import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.services.AuthService;
 import com.encora.proaatopic.services.ResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,9 +102,9 @@ public class ResourceControllerTest {
     }
 
     @Nested
-    class CreateTopic {
+    class CreateResource {
         @Test
-        void when_called_with_topic_should_return_topic() throws Exception {
+        void when_called_with_resource_should_return_resource() throws Exception {
             Resource resource = new Resource("Resource", "Resource URL");
 
             ResourceDto resourceDto = new ResourceDto("Resource", "Resource URL", 1);
@@ -123,7 +121,7 @@ public class ResourceControllerTest {
         }
 
         @Test
-        void when_called_without_topic_should_throw_error() throws Exception {
+        void when_called_without_resource_should_throw_error() throws Exception {
             String json = objectMapper.writeValueAsString(null);
 
             mockMvc.perform(post("/resources")
