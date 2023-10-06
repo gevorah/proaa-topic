@@ -52,4 +52,19 @@ public class ResourceController {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Resource> editResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
+        log.debug("Running edit resource endpoint");
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (String) authentication.getPrincipal();
+            Resource resource = resourceService.editResource(new Resource(id, resourceDto.getDescriptionName(), resourceDto.getUrl(), null), resourceDto.getTopicId());
+            log.info(resource.getDescriptionName() + " resource edited by " + userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resource);
+        } catch (Exception e) {
+            log.error("Unable to edit resource with message: " + e.getMessage(), e);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.encora.proaatopic.services;
 import com.encora.proaatopic.domain.Resource;
 import com.encora.proaatopic.domain.Topic;
 import com.encora.proaatopic.dto.ResourceDto;
+import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.ResourceRepository;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,18 @@ public class ResourceServiceImpl implements ResourceService {
         Topic topic = topicRepository.findById(topicId).orElseThrow();
         resource.setTopic(topic);
         topic.addResource(resource);
-        topicRepository.save(topic);
         return resourceRepository.save(resource);
+    }
+
+    public Resource editResource(Resource resource, Integer topicId) {
+        Resource resourceFromDb = resourceRepository.findById(resource.getId()).orElseThrow();
+        resourceFromDb.setDescriptionName(resource.getDescriptionName());
+        resourceFromDb.setUrl(resource.getUrl());
+        if(!resourceFromDb.getTopic().getId().equals(topicId)) {
+            Topic topic = topicRepository.findById(topicId).orElseThrow();
+            resourceFromDb.setTopic(topic);
+            topic.addResource(resourceFromDb);
+        }
+        return resourceRepository.save(resourceFromDb);
     }
 }
