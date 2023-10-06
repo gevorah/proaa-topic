@@ -1,6 +1,7 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Resource;
+import com.encora.proaatopic.dto.ResourceDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.ResourceService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +34,21 @@ public class ResourceController {
             return ResponseEntity.status(HttpStatus.OK).body(resources);
         } catch (Exception e) {
             log.error("Unable to access resources data with message: " + e.getMessage(), e);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+        }
+    }
+
+    @PostMapping()
+    public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
+        log.debug("Running create resource endpoint");
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (String) authentication.getPrincipal();
+            Resource resource = resourceService.addResource(new Resource(resourceDto.getDescriptionName(), resourceDto.getUrl()), resourceDto.getTopicId());
+            log.info(resource.getDescriptionName() + " resource created by " + userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resource);
+        } catch (Exception e) {
+            log.error("Unable to create resource with message: " + e.getMessage(), e);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
         }
     }
