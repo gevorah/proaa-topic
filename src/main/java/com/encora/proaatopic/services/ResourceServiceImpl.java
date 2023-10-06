@@ -2,8 +2,6 @@ package com.encora.proaatopic.services;
 
 import com.encora.proaatopic.domain.Resource;
 import com.encora.proaatopic.domain.Topic;
-import com.encora.proaatopic.dto.ResourceDto;
-import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.ResourceRepository;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
