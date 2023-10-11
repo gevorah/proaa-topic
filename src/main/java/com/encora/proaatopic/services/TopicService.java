@@ -10,6 +10,8 @@ public interface TopicService {
 
     List<Topic> topicsByOwner(String userId);
 
+    Topic topicByOwner(Integer id, String userId);
+
     Topic addTopic(Topic topic);
 
     Topic editTopic(Topic topic);

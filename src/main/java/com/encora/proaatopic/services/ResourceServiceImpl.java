@@ -2,6 +2,7 @@ package com.encora.proaatopic.services;
 
 import com.encora.proaatopic.domain.Resource;
 import com.encora.proaatopic.domain.Topic;
+import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.ResourceRepository;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,14 @@ public class ResourceServiceImpl implements ResourceService {
 
     public List<Resource> resourcesByOwner(String userId) {
         return resourceRepository.findResourcesByUserId(userId);
+    }
+
+    public Resource resourceByOwner(Integer id, String userId) {
+        Resource resource = resourceRepository.findById(id).orElseThrow();
+        if(!resource.getTopic().getUserId().equalsIgnoreCase(userId)) {
+            throw new HttpException(403, "Forbidden");
+        }
+        return resource;
     }
 
     public Resource addResource(Resource resource, Integer topicId) {

@@ -38,6 +38,16 @@ public class ResourceController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
+        log.debug("Running resources by owner endpoint");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Resource resource = resourceService.resourceByOwner(id, userId);
+        log.info(resource.getDescriptionName() + " resource retrieved by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resource);
+    }
+
     @PostMapping()
     public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
         log.debug("Running create resource endpoint");
@@ -54,7 +64,7 @@ public class ResourceController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Resource> editResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
+    public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
         log.debug("Running edit resource endpoint");
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

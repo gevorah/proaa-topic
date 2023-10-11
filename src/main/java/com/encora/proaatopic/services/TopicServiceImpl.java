@@ -27,6 +27,14 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findTopicsByUserId(userId);
     }
 
+    public Topic topicByOwner(Integer id, String userId) {
+        Topic topic = topicRepository.findById(id).orElseThrow();
+        if (!topic.getUserId().equalsIgnoreCase(userId)) {
+            throw new HttpException(403, "Forbidden");
+        }
+        return topic;
+    }
+
     public Topic addTopic(Topic topic) {
         return topicRepository.save(topic);
     }
