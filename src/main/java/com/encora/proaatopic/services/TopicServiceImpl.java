@@ -8,6 +8,7 @@ import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,14 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findTopicsByUserId(userId);
     }
 
+    public Topic topicByOwner(Integer id, String userId) {
+        Topic topic = topicRepository.findById(id).orElseThrow();
+        if (!topic.getUserId().equalsIgnoreCase(userId)) {
+            throw new HttpException(HttpStatus.FORBIDDEN, "Forbidden");
+        }
+        return topic;
+    }
+
     public Topic addTopic(Topic topic) {
         return topicRepository.save(topic);
     }
@@ -34,7 +43,7 @@ public class TopicServiceImpl implements TopicService {
     public Topic editTopic(Topic topic) {
         Topic topicFromDb = topicRepository.findById(topic.getId()).orElseThrow();
         if(!topicFromDb.getUserId().equalsIgnoreCase(topic.getUserId())) {
-            throw new HttpException(401, "Unauthorized");
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         topicFromDb.setName(topic.getName());
         return topicRepository.save(topicFromDb);

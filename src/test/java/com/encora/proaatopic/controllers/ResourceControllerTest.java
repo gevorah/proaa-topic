@@ -30,8 +30,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -127,6 +127,35 @@ public class ResourceControllerTest {
             mockMvc.perform(post("/resources")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(json))
+                    .andExpect(status().is4xxClientError());
+        }
+    }
+
+    @Nested
+    class UpdateResource {
+        @Test
+        void when_called_with_resource_should_return_resource() throws Exception {
+            Resource resource = new Resource(1, "Resource", "Resource URL", null);
+
+            ResourceDto resourceDto = new ResourceDto("Resource", "Resource URL", 1);
+            String json = objectMapper.writeValueAsString(resourceDto);
+
+            when(resourceService.editResource(ArgumentMatchers.any(Resource.class), ArgumentMatchers.eq(resourceDto.getTopicId()))).thenReturn(resource);
+
+            mockMvc.perform(patch("/resources/" + resource.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(resource.getId())))
+                    .andExpect(jsonPath("$.descriptionName", is(resource.getDescriptionName())))
+                    .andExpect(jsonPath("$.url", is(resource.getUrl())));
+        }
+
+        @Test
+        void when_called_without_id_should_throw_error() throws Exception {
+            mockMvc.perform(patch("/resources/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
                     .andExpect(status().is4xxClientError());
         }
     }

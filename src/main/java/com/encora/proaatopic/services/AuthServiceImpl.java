@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
                 .retrieve()
                 .onStatus(HttpStatus::isError, clientResponse ->
                         clientResponse.bodyToMono(HttpExceptionDto.class).flatMap(e ->
-                                Mono.error(new HttpException(e.getStatus(), e.getMessage()))
+                                Mono.error(new HttpException(HttpStatus.resolve(e.getStatus()), e.getMessage()))
                         )
                 )
                 .bodyToMono(ValidateTokenDto.class)

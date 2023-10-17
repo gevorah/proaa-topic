@@ -34,8 +34,18 @@ public class ResourceController {
             return ResponseEntity.status(HttpStatus.OK).body(resources);
         } catch (Exception e) {
             log.error("Unable to access resources data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
+        log.debug("Running resources by owner endpoint");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Resource resource = resourceService.resourceByOwner(id, userId);
+        log.info(resource.getDescriptionName() + " resource retrieved by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
     @PostMapping()
@@ -44,12 +54,29 @@ public class ResourceController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userId = (String) authentication.getPrincipal();
-            Resource resource = resourceService.addResource(new Resource(resourceDto.getDescriptionName(), resourceDto.getUrl()), resourceDto.getTopicId());
+            Resource createResource = new Resource(resourceDto.getDescriptionName(), resourceDto.getUrl());
+            Resource resource = resourceService.addResource(createResource, resourceDto.getTopicId());
             log.info(resource.getDescriptionName() + " resource created by " + userId);
             return ResponseEntity.status(HttpStatus.OK).body(resource);
         } catch (Exception e) {
             log.error("Unable to create resource with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
+        log.debug("Running edit resource endpoint");
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userId = (String) authentication.getPrincipal();
+            Resource updateResource = new Resource(id, resourceDto.getDescriptionName(), resourceDto.getUrl(), null);
+            Resource resource = resourceService.editResource(updateResource, resourceDto.getTopicId());
+            log.info(resource.getDescriptionName() + " resource edited by " + userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resource);
+        } catch (Exception e) {
+            log.error("Unable to edit resource with message: " + e.getMessage(), e);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

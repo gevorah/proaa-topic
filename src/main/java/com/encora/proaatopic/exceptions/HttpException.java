@@ -1,12 +1,13 @@
 package com.encora.proaatopic.exceptions;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class HttpException extends RuntimeException {
-    private final Integer status;
+    private final HttpStatus status;
 
-    public HttpException(Integer status, String message) {
+    public HttpException(HttpStatus status, String message) {
         super(message);
         this.status = status;
     }

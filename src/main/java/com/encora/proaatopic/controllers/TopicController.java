@@ -34,7 +34,7 @@ public class TopicController {
             return ResponseEntity.status(HttpStatus.OK).body(topics);
         } catch (Exception e) {
             log.error("Unable to access top ten topics data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -49,8 +49,18 @@ public class TopicController {
             return ResponseEntity.status(HttpStatus.OK).body(topics);
         } catch (Exception e) {
             log.error("Unable to access topics data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Topic> topicByOwner(@PathVariable Integer id) {
+        log.debug("Running topic by owner endpoint");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Topic topic = topicService.topicByOwner(id, userId);
+        log.info(topic.getName() + " topic retrieved by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(topic);
     }
 
     @PostMapping()
@@ -59,28 +69,25 @@ public class TopicController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userId = (String) authentication.getPrincipal();
-            Topic topic = topicService.addTopic(new Topic(topicDto.getName(), userId));
+            Topic createTopic = new Topic(topicDto.getName(), userId);
+            Topic topic = topicService.addTopic(createTopic);
             log.info(topic.getName() + " topic created by " + userId);
             return ResponseEntity.status(HttpStatus.OK).body(topic);
         } catch (Exception e) {
             log.error("Unable to create topic with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Topic> updateTopic(@PathVariable Integer id, @RequestBody TopicDto topicDto) {
-        log.debug("Running create topic endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            Topic topic = topicService.editTopic(new Topic(id, topicDto.getName(), userId, null));
-            log.info(topic.getName() + " topic updated by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(topic);
-        } catch (Exception e) {
-            log.error("Unable to create topic with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-        }
+        log.debug("Running update topic endpoint");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Topic updateTopic = new Topic(id, topicDto.getName(), userId, null);
+        Topic topic = topicService.editTopic(updateTopic);
+        log.info(topic.getName() + " topic updated by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(topic);
     }
 
 }
