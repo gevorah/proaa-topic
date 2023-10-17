@@ -6,6 +6,7 @@ import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.ResourceRepository;
 import com.encora.proaatopic.repositories.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ResourceServiceImpl implements ResourceService {
     public Resource resourceByOwner(Integer id, String userId) {
         Resource resource = resourceRepository.findById(id).orElseThrow();
         if(!resource.getTopic().getUserId().equalsIgnoreCase(userId)) {
-            throw new HttpException(403, "Forbidden");
+            throw new HttpException(HttpStatus.FORBIDDEN, "Forbidden");
         }
         return resource;
     }
