@@ -4,6 +4,10 @@ import com.encora.proaatopic.domain.Resource;
 import com.encora.proaatopic.dto.ResourceDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.ResourceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,8 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
+    @Operation(summary = "Get resources by owner", tags = "Resources")
+    @ApiResponse( responseCode = "200", description = "Successfully retrieve resources")
     @GetMapping()
     public ResponseEntity<List<Resource>> resourcesByOwner() {
         log.debug("Running resources by owner endpoint");
@@ -38,6 +44,9 @@ public class ResourceController {
         }
     }
 
+    @Operation(summary = "Get resource by id and owner", tags = "Resources")
+    @Parameters(value = { @Parameter(name = "id", description = "Id of the resource to search and retrieve") })
+    @ApiResponse( responseCode = "200", description = "Successfully retrieve resource")
     @GetMapping("/{id}")
     public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
         log.debug("Running resources by owner endpoint");
@@ -48,6 +57,8 @@ public class ResourceController {
         return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
+    @Operation(summary = "Create resource", tags = "Resources")
+    @ApiResponse( responseCode = "200", description = "Successfully create resource")
     @PostMapping()
     public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
         log.debug("Running create resource endpoint");
@@ -64,6 +75,9 @@ public class ResourceController {
         }
     }
 
+    @Operation(summary = "Update resource", tags = "Resources")
+    @Parameters(value = { @Parameter(name = "id", description = "Id of the resource to search and update") })
+    @ApiResponse( responseCode = "200", description = "Successfully update resource")
     @PatchMapping("/{id}")
     public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
         log.debug("Running edit resource endpoint");

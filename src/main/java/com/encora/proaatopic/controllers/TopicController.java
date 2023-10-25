@@ -5,6 +5,10 @@ import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.TopicService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,8 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
+    @Operation(summary = "Get top ten topics with the most resources", tags = "Topics")
+    @ApiResponse( responseCode = "200", description = "Successfully retrieve top ten topics")
     @GetMapping(path = "/top-ten")
     public ResponseEntity<List<TopicTopDto>> topTen() {
         log.debug("Running top ten topics endpoint");
@@ -38,6 +44,8 @@ public class TopicController {
         }
     }
 
+    @Operation(summary = "Get topics by owner", tags = "Topics")
+    @ApiResponse( responseCode = "200", description = "Successfully retrieve topics")
     @GetMapping()
     public ResponseEntity<List<Topic>> topicsByOwner() {
         log.debug("Running topics by owner endpoint");
@@ -53,6 +61,9 @@ public class TopicController {
         }
     }
 
+    @Operation(summary = "Get topic by id and owner", tags = "Topics")
+    @Parameters(value = { @Parameter(name = "id", description = "Id of the topic to search and retrieve") })
+    @ApiResponse( responseCode = "200", description = "Successfully retrieve topic")
     @GetMapping("/{id}")
     public ResponseEntity<Topic> topicByOwner(@PathVariable Integer id) {
         log.debug("Running topic by owner endpoint");
@@ -63,6 +74,8 @@ public class TopicController {
         return ResponseEntity.status(HttpStatus.OK).body(topic);
     }
 
+    @Operation(summary = "Create topic", tags = "Topics")
+    @ApiResponse( responseCode = "200", description = "Successfully create topic")
     @PostMapping()
     public ResponseEntity<Topic> createTopic(@RequestBody TopicDto topicDto) {
         log.debug("Running create topic endpoint");
@@ -79,6 +92,9 @@ public class TopicController {
         }
     }
 
+    @Operation(summary = "Update topic", tags = "Topics")
+    @Parameters(value = { @Parameter(name = "id", description = "Id of the topic to search and update") })
+    @ApiResponse( responseCode = "200", description = "Successfully update topic")
     @PatchMapping("/{id}")
     public ResponseEntity<Topic> updateTopic(@PathVariable Integer id, @RequestBody TopicDto topicDto) {
         log.debug("Running update topic endpoint");
