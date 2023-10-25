@@ -6,8 +6,8 @@ import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.ResourceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
-    @Operation(summary = "Get resources by owner", tags = "Resources")
-    @ApiResponse( responseCode = "200", description = "Successfully retrieve resources")
+    @Operation(summary = "Get resources by owner", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resources")})
+    @SecurityRequirement(name = "Authorization")
     @GetMapping()
     public ResponseEntity<List<Resource>> resourcesByOwner() {
         log.debug("Running resources by owner endpoint");
@@ -44,9 +44,8 @@ public class ResourceController {
         }
     }
 
-    @Operation(summary = "Get resource by id and owner", tags = "Resources")
-    @Parameters(value = { @Parameter(name = "id", description = "Id of the resource to search and retrieve") })
-    @ApiResponse( responseCode = "200", description = "Successfully retrieve resource")
+    @Operation(summary = "Get resource by id and owner", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resource")})
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("/{id}")
     public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
         log.debug("Running resources by owner endpoint");
@@ -57,8 +56,8 @@ public class ResourceController {
         return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
-    @Operation(summary = "Create resource", tags = "Resources")
-    @ApiResponse( responseCode = "200", description = "Successfully create resource")
+    @Operation(summary = "Create resource", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully create resource")})
+    @SecurityRequirement(name = "Authorization")
     @PostMapping()
     public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
         log.debug("Running create resource endpoint");
@@ -75,9 +74,8 @@ public class ResourceController {
         }
     }
 
-    @Operation(summary = "Update resource", tags = "Resources")
-    @Parameters(value = { @Parameter(name = "id", description = "Id of the resource to search and update") })
-    @ApiResponse( responseCode = "200", description = "Successfully update resource")
+    @Operation(summary = "Update resource", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update resource")})
+    @SecurityRequirement(name = "Authorization")
     @PatchMapping("/{id}")
     public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
         log.debug("Running edit resource endpoint");
