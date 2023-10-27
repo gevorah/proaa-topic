@@ -43,8 +43,7 @@ public class TopicController {
         }
     }
 
-    @Operation(summary = "Get topics by owner", tags = "Topics", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topics")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Get topics by owner", tags = "Topics", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topics")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping()
     public ResponseEntity<List<Topic>> topicsByOwner() {
         log.debug("Running topics by owner endpoint");
@@ -60,8 +59,7 @@ public class TopicController {
         }
     }
 
-    @Operation(summary = "Get topic by id and owner", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topic")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Get topic by id and owner", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topic")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/{id}")
     public ResponseEntity<Topic> topicByOwner(@PathVariable Integer id) {
         log.debug("Running topic by owner endpoint");
@@ -72,8 +70,7 @@ public class TopicController {
         return ResponseEntity.status(HttpStatus.OK).body(topic);
     }
 
-    @Operation(summary = "Create topic", tags = "Topics", responses = {@ApiResponse(responseCode = "200", description = "Successfully create topic")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Create topic", tags = "Topics", responses = {@ApiResponse(responseCode = "200", description = "Successfully create topic")}, security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping()
     public ResponseEntity<Topic> createTopic(@RequestBody TopicDto topicDto) {
         log.debug("Running create topic endpoint");
@@ -90,8 +87,7 @@ public class TopicController {
         }
     }
 
-    @Operation(summary = "Update topic", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update topic")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Update topic", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update topic")}, security = {@SecurityRequirement(name = "Authorization")})
     @PatchMapping("/{id}")
     public ResponseEntity<Topic> updateTopic(@PathVariable Integer id, @RequestBody TopicDto topicDto) {
         log.debug("Running update topic endpoint");

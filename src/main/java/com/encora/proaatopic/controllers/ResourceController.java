@@ -27,8 +27,7 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
-    @Operation(summary = "Get resources by owner", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resources")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Get resources by owner", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resources")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping()
     public ResponseEntity<List<Resource>> resourcesByOwner() {
         log.debug("Running resources by owner endpoint");
@@ -44,8 +43,7 @@ public class ResourceController {
         }
     }
 
-    @Operation(summary = "Get resource by id and owner", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resource")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Get resource by id and owner", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/{id}")
     public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
         log.debug("Running resources by owner endpoint");
@@ -56,8 +54,7 @@ public class ResourceController {
         return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
-    @Operation(summary = "Create resource", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully create resource")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Create resource", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully create resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping()
     public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
         log.debug("Running create resource endpoint");
@@ -74,8 +71,7 @@ public class ResourceController {
         }
     }
 
-    @Operation(summary = "Update resource", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update resource")})
-    @SecurityRequirement(name = "Authorization")
+    @Operation(summary = "Update resource", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @PatchMapping("/{id}")
     public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
         log.debug("Running edit resource endpoint");
