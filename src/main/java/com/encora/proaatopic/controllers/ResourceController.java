@@ -1,9 +1,15 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Resource;
+import com.encora.proaatopic.dto.HttpExceptionDto;
 import com.encora.proaatopic.dto.ResourceDto;
-import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.ResourceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,25 +25,23 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/resources", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@ApiResponse(description = "failed operation", content = {@Content(schema = @Schema(implementation = HttpExceptionDto.class))})
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
+    @Operation(summary = "Get resources by owner", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resources")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping()
     public ResponseEntity<List<Resource>> resourcesByOwner() {
         log.debug("Running resources by owner endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            List<Resource> resources = resourceService.resourcesByOwner(userId);
-            log.info(resources.size() + " resources retrieved by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(resources);
-        } catch (Exception e) {
-            log.error("Unable to access resources data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        List<Resource> resources = resourceService.resourcesByOwner(userId);
+        log.info(resources.size() + " resources retrieved by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resources);
     }
 
+    @Operation(summary = "Get resource by id and owner", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/{id}")
     public ResponseEntity<Resource> resourceByOwner(@PathVariable Integer id) {
         log.debug("Running resources by owner endpoint");
@@ -48,35 +52,27 @@ public class ResourceController {
         return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
+    @Operation(summary = "Create resource", tags = "Resources", responses = {@ApiResponse(responseCode = "200", description = "Successfully create resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping()
     public ResponseEntity<Resource> createResource(@RequestBody ResourceDto resourceDto) {
         log.debug("Running create resource endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            Resource createResource = new Resource(resourceDto.getDescriptionName(), resourceDto.getUrl());
-            Resource resource = resourceService.addResource(createResource, resourceDto.getTopicId());
-            log.info(resource.getDescriptionName() + " resource created by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(resource);
-        } catch (Exception e) {
-            log.error("Unable to create resource with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Resource createResource = new Resource(resourceDto.getDescriptionName(), resourceDto.getUrl());
+        Resource resource = resourceService.addResource(createResource, resourceDto.getTopicId());
+        log.info(resource.getDescriptionName() + " resource created by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
+    @Operation(summary = "Update resource", tags = "Resources", parameters = {@Parameter(name = "id", description = "Id of the resource to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update resource")}, security = {@SecurityRequirement(name = "Authorization")})
     @PatchMapping("/{id}")
     public ResponseEntity<Resource> updateResource(@PathVariable Integer id, @RequestBody ResourceDto resourceDto) {
         log.debug("Running edit resource endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            Resource updateResource = new Resource(id, resourceDto.getDescriptionName(), resourceDto.getUrl(), null);
-            Resource resource = resourceService.editResource(updateResource, resourceDto.getTopicId());
-            log.info(resource.getDescriptionName() + " resource edited by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(resource);
-        } catch (Exception e) {
-            log.error("Unable to edit resource with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Resource updateResource = new Resource(id, resourceDto.getDescriptionName(), resourceDto.getUrl(), null);
+        Resource resource = resourceService.editResource(updateResource, resourceDto.getTopicId());
+        log.info(resource.getDescriptionName() + " resource edited by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 }

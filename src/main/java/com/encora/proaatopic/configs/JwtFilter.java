@@ -1,13 +1,11 @@
 package com.encora.proaatopic.configs;
 
 import com.encora.proaatopic.dto.ValidateTokenDto;
-import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;

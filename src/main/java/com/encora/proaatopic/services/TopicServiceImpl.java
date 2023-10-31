@@ -1,7 +1,6 @@
 package com.encora.proaatopic.services;
 
 import com.encora.proaatopic.domain.Topic;
-import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
 import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.repositories.TopicRepository;
