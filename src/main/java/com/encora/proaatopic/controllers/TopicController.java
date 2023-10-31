@@ -1,12 +1,14 @@
 package com.encora.proaatopic.controllers;
 
 import com.encora.proaatopic.domain.Topic;
+import com.encora.proaatopic.dto.HttpExceptionDto;
 import com.encora.proaatopic.dto.TopicDto;
 import com.encora.proaatopic.dto.TopicTopDto;
-import com.encora.proaatopic.exceptions.HttpException;
 import com.encora.proaatopic.services.TopicService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@ApiResponse(description = "failed operation", content = {@Content(schema = @Schema(implementation = HttpExceptionDto.class))})
 public class TopicController {
 
     @Autowired
@@ -33,30 +36,20 @@ public class TopicController {
     @GetMapping(path = "/top-ten")
     public ResponseEntity<List<TopicTopDto>> topTen() {
         log.debug("Running top ten topics endpoint");
-        try {
-            List<TopicTopDto> topics = topicService.topTen();
-            log.info("Top " + topics.size() + " topics");
-            return ResponseEntity.status(HttpStatus.OK).body(topics);
-        } catch (Exception e) {
-            log.error("Unable to access top ten topics data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        List<TopicTopDto> topics = topicService.topTen();
+        log.info("Top " + topics.size() + " topics");
+        return ResponseEntity.status(HttpStatus.OK).body(topics);
     }
 
     @Operation(summary = "Get topics by owner", tags = "Topics", responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topics")}, security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping()
     public ResponseEntity<List<Topic>> topicsByOwner() {
         log.debug("Running topics by owner endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            List<Topic> topics = topicService.topicsByOwner(userId);
-            log.info(topics.size() + " topics retrieved by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(topics);
-        } catch (Exception e) {
-            log.error("Unable to access topics data with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        List<Topic> topics = topicService.topicsByOwner(userId);
+        log.info(topics.size() + " topics retrieved by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(topics);
     }
 
     @Operation(summary = "Get topic by id and owner", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and retrieve")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully retrieve topic")}, security = {@SecurityRequirement(name = "Authorization")})
@@ -74,17 +67,12 @@ public class TopicController {
     @PostMapping()
     public ResponseEntity<Topic> createTopic(@RequestBody TopicDto topicDto) {
         log.debug("Running create topic endpoint");
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String userId = (String) authentication.getPrincipal();
-            Topic createTopic = new Topic(topicDto.getName(), userId);
-            Topic topic = topicService.addTopic(createTopic);
-            log.info(topic.getName() + " topic created by " + userId);
-            return ResponseEntity.status(HttpStatus.OK).body(topic);
-        } catch (Exception e) {
-            log.error("Unable to create topic with message: " + e.getMessage(), e);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = (String) authentication.getPrincipal();
+        Topic createTopic = new Topic(topicDto.getName(), userId);
+        Topic topic = topicService.addTopic(createTopic);
+        log.info(topic.getName() + " topic created by " + userId);
+        return ResponseEntity.status(HttpStatus.OK).body(topic);
     }
 
     @Operation(summary = "Update topic", tags = "Topics", parameters = {@Parameter(name = "id", description = "Id of the topic to search and update")}, responses = {@ApiResponse(responseCode = "200", description = "Successfully update topic")}, security = {@SecurityRequirement(name = "Authorization")})

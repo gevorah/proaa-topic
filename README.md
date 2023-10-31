@@ -1,4 +1,4 @@
-# PROAA-topic
+# proaa-topic
 
 # Class Diagram
 ![PROAA-Class Diagram](https://github.com/gevorah/proaa-topic/assets/54603690/82008963-a777-46b9-9d82-8b38cca63815)
